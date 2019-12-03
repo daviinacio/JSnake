@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    
+}
+
+main.container {
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    padding: 0;
+}
+
+main.container div {
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+main.container div canvas {
+    margin: auto;
+    width: 75vh;
+    height: 75vh;
+}
+
+canvas {
+    border: 4px #000 solid;
+}
+
+
+/* Colors */
+body {
+    background: #333;
+}
+
+canvas {
+    border-color: #999;
+}
