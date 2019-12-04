@@ -15,7 +15,7 @@ function Snake(){
     },
     threads = [],
     intervals = {
-        speed: 200
+        speed: 300
     },
     running = true;
     
