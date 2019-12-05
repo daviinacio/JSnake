@@ -39,3 +39,12 @@ body {
 canvas {
     border-color: #999;
 }
+
+#game, #img_assets img {
+    image-rendering: pixelated;
+}
+
+/* Helpers */
+.only-mobile {
+    
+}

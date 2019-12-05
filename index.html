@@ -23,9 +23,19 @@ Created by daviinacio on 03/12/2019
 
     </head>
     <body onfocus="game.resume()" onblur="game.pause()">
+        <div id="img_assets" style="display: none"></div>
+
         <main class="container">
             <div>
                 <canvas id="game"></canvas>
+            </div>
+            <div class="only-mobile" style="display: none">
+                <div>
+                    <button id="input_up">Up</button>
+                    <button id="input_down">Down</button>
+                    <button id="input_left">Left</button>
+                    <button id="input_right">Right</button>
+                </div>
             </div>
         </main>
 
