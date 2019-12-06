@@ -400,19 +400,19 @@ export default function Snake(){
         else
         // Quadrante 2/4
         if(offsetX >= (offsetWidth / 2) && offsetY < (offsetHeight / 2)){
-            if(offsetX < offsetY)   move.up();
-            else                    move.right();
+            if((offsetWidth - offsetX) > offsetY)   move.up();
+            else                                    move.right();
         }
         else
         // Quadrante 3/4
         if(offsetX < (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
-            if(offsetX < offsetY)   move.left();
-            else                    move.down();
+            if(offsetX < (offsetHeight - offsetY))  move.left();
+            else                                    move.down();
         }
         else
         // Quadrante 4/4
         if(offsetX >= (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
-            if(offsetX < offsetY)   move.down();
+            if(offsetX < offsetY)   move.down()
             else                    move.right();
         }
 
