@@ -1,4 +1,4 @@
-function Snake(){
+export default function Snake(){
     var canvas, ctx, frames = 0, length = 15, state = {
         players: [],
         foods: [],
@@ -19,9 +19,9 @@ function Snake(){
     },
     running = true,
     assets = [],
-    assets_path = "src/assets/snake",
-    assets_resolution = 32,
-    draw_img = false;
+    assets_path = "src/assets/skin/snake",
+    assets_resolution = 16,
+    draw_img = true;
     
 
     function setup(canvasId, _length){
@@ -35,25 +35,11 @@ function Snake(){
         canvas.width = canvas.height = assets_resolution * length;
 
         console.log(canvas.width, canvas.height, length);
-
-
-
-
-        /*if(length < canvas.width || length < canvas.height){
-            if(canvas.width > canvas.height)
-                length = canvas.width;
-            else
-            if(canvas.width < canvas.height)
-                length = canvas.height;
-        }*/
         
         ctx = canvas.getContext("2d");
 
         document.addEventListener('keydown', keydown);
-
-        document.addEventListener('click', function(){
-            drawImg(!drawImg());
-        });
+        canvas.addEventListener('click', resume);
 
         reset();
 
@@ -61,12 +47,16 @@ function Snake(){
     }
 
     function loadAssets(){
-        var img_assets = document.getElementById('img_assets');
+        var img_assets = document.createElement('div');
+
+        img_assets.id = 'img_assets';
+        img_assets.style.display = 'none';
 
         assets = {
             head: [],
             body: [],
-            corner: []
+            corner: [],
+            food: []
         };
 
         assets.head.push(newImgAsset('head_up'));
@@ -80,21 +70,22 @@ function Snake(){
         assets.body.push(newImgAsset('body_right'));
 
         assets.corner[0] = [];
-        assets.corner[0][2] = newImgAsset('corner_down_left');
-        assets.corner[0][3] = newImgAsset('corner_down_right');
+        assets.corner[0][2] = newImgAsset('corner_up_left');
+        assets.corner[0][3] = newImgAsset('corner_up_right');
 
         assets.corner[1] = [];
-        assets.corner[1][2] = newImgAsset('corner_up_left');
-        assets.corner[1][3] = newImgAsset('corner_up_right');
+        assets.corner[1][2] = newImgAsset('corner_down_left');
+        assets.corner[1][3] = newImgAsset('corner_down_right');
 
         assets.corner[2] = [];
-        assets.corner[2][0] = newImgAsset('corner_right_up');
-        assets.corner[2][1] = newImgAsset('corner_right_down');
+        assets.corner[2][0] = newImgAsset('corner_left_up');
+        assets.corner[2][1] = newImgAsset('corner_left_down');
 
         assets.corner[3] = [];
-        assets.corner[3][0] = newImgAsset('corner_left_up');
-        assets.corner[3][1] = newImgAsset('corner_left_down');
+        assets.corner[3][0] = newImgAsset('corner_right_up');
+        assets.corner[3][1] = newImgAsset('corner_right_down');
 
+        assets.food.push(newImgAsset('food_2'));
 
 
         assets.head.forEach(function(head){
@@ -111,6 +102,12 @@ function Snake(){
             });
         });
 
+        assets.food.forEach(function(food){
+            img_assets.append(food);
+        });
+
+        document.body.append(img_assets);
+
     }
 
     function newImgAsset(filename){
@@ -126,25 +123,21 @@ function Snake(){
         window.requestAnimationFrame(run);
     }
 
+    // Draw states
     function draw(){
+        // Draw pause
         if(!running){
             const middle = parseInt(length / 2);
-            //const middleX = parseInt((canvas))
 
-            ctx.fillStyle = theme.pause_background;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawRect(theme.pause_background, 0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = theme.pause_foreground;
-            ctx.fillRect((middle - 1) * (canvas.width/length), (middle - 1) * (canvas.width/length), canvas.width/length, (canvas.height/length) * 3);
-            ctx.fillRect((middle + 1) * (canvas.width/length), (middle - 1) * (canvas.width/length), canvas.width/length, (canvas.height/length) * 3);
-            
+            drawRect(theme.pause_foreground, (middle - 1), (middle - 1), undefined, 3);
+            drawRect(theme.pause_foreground, (middle + 1), (middle - 1), undefined, 3);
             return;
         }
 
-
         // Draw background
-        ctx.fillStyle = theme.level_background;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawRect(theme.level_background, 0, 0, canvas.width, canvas.height);
 
         // Draw players
         state.players.forEach(function(player) {
@@ -152,42 +145,77 @@ function Snake(){
             player.body.forEach(function(body) {
                 if(draw_img){
                     if(typeof(body.corner) == 'undefined' || body.corner == -1)
-                        ctx.drawImage(assets.body[body.dir], body.x * (canvas.width/length), body.y * (canvas.width/length), canvas.width/length, canvas.height/length);
+                        drawImage(assets.body[body.dir], body.x, body.y);
                     else
-                        ctx.drawImage(assets.corner[body.corner.by][body.corner.to], body.x * (canvas.width/length), body.y * (canvas.width/length), canvas.width/length, canvas.height/length);
+                        drawImage(assets.corner[body.corner.by][body.corner.to], body.x, body.y);
                 }
-                else {
-                    ctx.fillStyle = theme.playerbody_foreground;
-                    ctx.fillRect(body.x * (canvas.width/length), body.y * (canvas.width/length), canvas.width/length, canvas.height/length);
-                }
+                else
+                    drawRect(theme.playerbody_foreground, body.x, body.y);
             });
 
             if(draw_img){
-                ctx.drawImage(assets.head[player.dir], player.x * (canvas.width/length), player.y * (canvas.width/length), canvas.width/length, canvas.height/length);
+                drawImage(assets.head[player.dir], player.x, player.y);
             }
-            else {
-                ctx.fillStyle = theme.player_foreground;
-                ctx.fillRect(player.x * (canvas.width/length), player.y * (canvas.width/length), canvas.width/length, canvas.height/length);
-            }
-            
-
+            else
+                drawRect(theme.player_foreground, player.x, player.y);
         });
         
         //Draw foods
         state.foods.forEach(function(food){
-            ctx.fillStyle = theme.food_foreground;
-            ctx.fillRect(food.x * (canvas.width/length), food.y * (canvas.width/length), canvas.width/length, canvas.height/length);
+            if(draw_img){
+                drawImage(assets.food[food.type], food.x, food.y);
+            }
+            else
+                drawRect(theme.food_foreground, food.x, food.y);
         });
 
         //Draw obstacles
-        state.foods.forEach(function(food){
-            ctx.fillStyle = theme.food_foreground;
-            ctx.fillRect(food.x * (canvas.width/length), food.y * (canvas.width/length), canvas.width/length, canvas.height/length);
+        state.obstacles.forEach(function(obstacle){
+            drawRect(theme.obstacle_foreground, obstacle.x, obstacle.y);
         });
     }
 
-    // 
+    // Draw on canvas
+    function drawRect(color, x, y, _width, _height){
+        const { width, height } = _drawFixWidthHeight(_width, _height);
+            
+        ctx.fillStyle = color;
+        ctx.fillRect(
+            x * (canvas.width/length), y * (canvas.width/length),
+            width, height
+        );
+    }
 
+    function drawImage(asset, x, y, _width, _height){
+        const { width, height } = _drawFixWidthHeight(_width, _height);
+            
+        ctx.drawImage(
+            asset, 
+            x * (canvas.width/length), y * (canvas.width/length),
+            width, height
+        );
+    }
+
+    function _drawFixWidthHeight(width, height){
+        if(typeof(width) == 'undefined')
+            var width = canvas.width/length;
+        else
+        if(width <= length)
+            width = (canvas.height/length) * width;
+
+        
+        if(typeof(height) == 'undefined')
+            var height = canvas.height/length;
+        else
+        if(height <= length)
+            height = (canvas.height/length) * height;
+
+        return {
+            width, height
+        }
+    }
+
+    //      Game        Game         Game          Game          Game      
     function reset(){
         state.foods = [];
         state.players = [];
@@ -230,8 +258,9 @@ function Snake(){
     //      Objects     Objects     Objects     Objects     Objects
     function newFood(){
         state.foods.push({
-            x: parseInt(Math.random() * (length - 0)),
-            y: parseInt(Math.random() * (length - 0))
+            x: parseInt(Math.random() * (length)),
+            y: parseInt(Math.random() * (length)),
+            type: parseInt(Math.random() * (assets.food.length))
         });
     }
 
@@ -260,8 +289,6 @@ function Snake(){
             x, y, dir
         };
 
-        
-
         if(typeof(oldMember) != 'undefined'){
             // Direction was changed
             if(oldMember.dir != member.dir){
@@ -270,7 +297,7 @@ function Snake(){
                     to: member.dir
                 }
 
-                console.log(member.corner);
+                //console.log(member.corner);
             }
         }
         
@@ -370,6 +397,14 @@ function Snake(){
             if(move(player))
                 playerMoving(player);
         }
+
+        if(keyName == '\'')
+            drawImg(!drawImg());
+
+        if(keyName == 'p')
+            running = !running;
+        else
+            resume();
     }
 
     function externalMovement() {
@@ -400,12 +435,3 @@ function Snake(){
         drawImg
     }
 }
-
-
-const game = new Snake();
-const inputs = game.externalMovement();
-
-game.setup('game');
-
-
-

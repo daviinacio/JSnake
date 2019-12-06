@@ -41,7 +41,10 @@ canvas {
 }
 
 #game, #img_assets img {
+    image-rendering: -webkit-optimize-contrast;
     image-rendering: pixelated;
+    
+    /* image-rendering: crisp-edges; */
 }
 
 /* Helpers */

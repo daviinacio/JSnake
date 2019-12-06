@@ -19,12 +19,10 @@ Created by daviinacio on 03/12/2019
         <title>Davi Inácio</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-        <link rel="stylesheet" href="src/css/style.css"/>
+        <link rel="stylesheet" href="src/assets/css/style.css"/>
 
     </head>
-    <body onfocus="game.resume()" onblur="game.pause()">
-        <div id="img_assets" style="display: none"></div>
-
+    <body>
         <main class="container">
             <div>
                 <canvas id="game"></canvas>
@@ -39,7 +37,15 @@ Created by daviinacio on 03/12/2019
             </div>
         </main>
 
-        <script src="src/index.js"></script>
+        <script type="module">
+            import Snake from './src/snake.js';
+
+            window.game = new Snake();
+
+            game.setup('game');
+
+            document.body.onblur = game.pause;
+        </script>
     </body>
 
 </html>
