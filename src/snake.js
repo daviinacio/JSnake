@@ -34,12 +34,12 @@ export default function Snake(){
 
         canvas.width = canvas.height = assets_resolution * length;
 
-        console.log(canvas.width, canvas.height, length);
+        //console.log(canvas.width, canvas.height, length);
         
         ctx = canvas.getContext("2d");
 
         document.addEventListener('keydown', keydown);
-        canvas.addEventListener('click', resume);
+        canvas.addEventListener('mousedown', mousedown);
 
         reset();
 
@@ -386,6 +386,39 @@ export default function Snake(){
         }
     }
 
+    function mousedown(e){
+        const { offsetX, offsetY } = e;
+        const { offsetWidth, offsetHeight } = canvas;
+
+        const move = externalMovement();
+
+        // Quadrante 1/4
+        if(offsetX < (offsetWidth / 2) && offsetY < (offsetHeight / 2)){
+            if(offsetX < offsetY)   move.left();
+            else                    move.up();
+        }
+        else
+        // Quadrante 2/4
+        if(offsetX >= (offsetWidth / 2) && offsetY < (offsetHeight / 2)){
+            if(offsetX < offsetY)   move.up();
+            else                    move.right();
+        }
+        else
+        // Quadrante 3/4
+        if(offsetX < (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
+            if(offsetX < offsetY)   move.left();
+            else                    move.down();
+        }
+        else
+        // Quadrante 4/4
+        if(offsetX >= (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
+            if(offsetX < offsetY)   move.down();
+            else                    move.right();
+        }
+
+        resume();
+    }
+
     function keydown(e){
         const keyName = e.key;
 
@@ -412,16 +445,16 @@ export default function Snake(){
 
         return {
             up(){
-                keyboardInput['ArrowUp'](player);
+                if(keyboardInput['ArrowUp'](player)) playerMoving(player);
             },
             down(){
-                keyboardInput['ArrowDown'](player);
+                if(keyboardInput['ArrowDown'](player)) playerMoving(player);
             },
             left(){
-                keyboardInput['ArrowLeft'](player);
+                if(keyboardInput['ArrowLeft'](player)) playerMoving(player);
             },
             right(){
-                keyboardInput['ArrowRight'](player);
+                if(keyboardInput['ArrowRight'](player)) playerMoving(player);
             }
         }
     }
