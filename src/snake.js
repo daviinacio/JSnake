@@ -1,3 +1,6 @@
+import KeyboardListener from './keyboard-listener.js';
+import TouchscreenListener from './touchscreen-listener.js';
+
 export default function Snake(){
     var canvas, ctx, frames = 0, length = 15, state = {
         players: [],
@@ -38,8 +41,8 @@ export default function Snake(){
         
         ctx = canvas.getContext("2d");
 
-        document.addEventListener('keydown', keydown);
-        canvas.addEventListener('mousedown', mousedown);
+        const keyboard = new KeyboardListener(input_interface, document);
+        const touchscreen = new TouchscreenListener(input_interface, canvas);
 
         reset();
 
@@ -228,13 +231,7 @@ export default function Snake(){
     }
 
     function next(){
-        if(threads.speed) clearInterval(threads.speed);
-
-        threads.speed = setInterval(function(){
-            state.players.forEach(function(player){
-                playerMoving(player);
-            });
-        }, state.speed);
+        moveThread();
 
         // Multiples foods on level
         for(var i = 0; i < state.players.length; i++) newFood();
@@ -242,17 +239,17 @@ export default function Snake(){
     }
 
     function pause(){
-        running = false;
+        running = !running;
     }
 
     function resume(){
         running = true;
     }
 
-    function drawImg(enabled){
+    function toggleAssets(enabled){
         if(typeof(enabled) != 'undefined')
             draw_img = enabled;
-        return draw_img;
+        draw_img = !draw_img;
     }
 
     //      Objects     Objects     Objects     Objects     Objects
@@ -276,7 +273,8 @@ export default function Snake(){
             length: 3,
             body: [],
             score: 0,
-            dir: parseInt(Math.random() * (4 - 0))
+            dir: parseInt(Math.random() * (4 - 0)),
+            canMove: true
         });
     }
 
@@ -330,141 +328,80 @@ export default function Snake(){
             alert("Você não pode colidir com as paredes");
             reset();
         }
-
     }
 
-    var colisionEvent = {
+    function moveThread(){
+        if(threads.speed) clearInterval(threads.speed);
 
+        threads.speed = setInterval(function(){
+            state.players.forEach(function(player){
+                if(!running) return;
+
+                registerBody(player);
+
+                switch(player.dir){
+                    //  [Up]
+                    case 0: player.y--; break;
+
+                    //  [Down]
+                    case 1: player.y++; break;
+
+                    //  [Left]
+                    case 2: player.x--; break;
+
+                    //  [Right]
+                    case 3: player.x++; break;
+                }
+
+                checkColision(player);
+
+                player.canMove = true;
+            });
+        }, state.speed);
     }
 
-    function playerMoving(player){
-        if(!running) return;
-
-        registerBody(player);
-
-        switch(player.dir){
-            //  [Up]
-            case 0: player.y--; break;
-            
-            //  [Down]
-            case 1: player.y++; break;
-
-            //  [Left]
-            case 2: player.x--; break;
-
-            //  [Right]
-            case 3: player.x++; break;
-        }
-
-        checkColision(player);
-    }
-
-    var keyboardInput = {
-        'ArrowUp': function(player){
-            if(player.dir != 1 && player.dir != 0){
+    const input_interface = {
+        up(){
+            const player = state.players[0];
+            if(player.dir != 1 && player.dir != 0 && player.canMove){
                 player.dir = 0;
+                player.canMove = false;
                 return true;
             }
         },
-        'ArrowDown': function(player){
-           if(player.dir != 0 && player.dir != 1){
+        down(){
+            const player = state.players[0];
+            if(player.dir != 0 && player.dir != 1 && player.canMove){
                 player.dir = 1;
+                player.canMove = false;
                 return true;
-           }
+            }
         },
-        'ArrowLeft': function(player){
-            if(player.dir != 3 && player.dir != 2){
+        left(){
+            const player = state.players[0];
+            if(player.dir != 3 && player.dir != 2 && player.canMove){
                 player.dir = 2;
+                player.canMove = false;
                 return true;
             }
         },
-        'ArrowRight': function(player){
-            if(player.dir != 2 && player.dir != 3){
+        right(){
+            const player = state.players[0];
+            if(player.dir != 2 && player.dir != 3 && player.canMove){
                 player.dir = 3;
+                player.canMove = false;
                 return true;
             }
-        }
-    }
-
-    function mousedown(e){
-        const { offsetX, offsetY } = e;
-        const { offsetWidth, offsetHeight } = canvas;
-
-        const move = externalMovement();
-
-        // Quadrante 1/4
-        if(offsetX < (offsetWidth / 2) && offsetY < (offsetHeight / 2)){
-            if(offsetX < offsetY)   move.left();
-            else                    move.up();
-        }
-        else
-        // Quadrante 2/4
-        if(offsetX >= (offsetWidth / 2) && offsetY < (offsetHeight / 2)){
-            if((offsetWidth - offsetX) > offsetY)   move.up();
-            else                                    move.right();
-        }
-        else
-        // Quadrante 3/4
-        if(offsetX < (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
-            if(offsetX < (offsetHeight - offsetY))  move.left();
-            else                                    move.down();
-        }
-        else
-        // Quadrante 4/4
-        if(offsetX >= (offsetWidth / 2) && offsetY >= (offsetHeight / 2)){
-            if(offsetX < offsetY)   move.down()
-            else                    move.right();
-        }
-
-        resume();
-    }
-
-    function keydown(e){
-        const keyName = e.key;
-
-        const player = state.players[0];
-        
-        const move = keyboardInput[keyName];
-
-        if(move && player){
-            if(move(player))
-                playerMoving(player);
-        }
-
-        if(keyName == '\'')
-            drawImg(!drawImg());
-
-        if(keyName == 'p')
-            running = !running;
-        else
-            resume();
-    }
-
-    function externalMovement() {
-        const player = state.players[0];
-
-        return {
-            up(){
-                if(keyboardInput['ArrowUp'](player)) playerMoving(player);
-            },
-            down(){
-                if(keyboardInput['ArrowDown'](player)) playerMoving(player);
-            },
-            left(){
-                if(keyboardInput['ArrowLeft'](player)) playerMoving(player);
-            },
-            right(){
-                if(keyboardInput['ArrowRight'](player)) playerMoving(player);
-            }
-        }
-    }
+        },
+        resume: resume,
+        pause: pause,
+        toggleAssets: toggleAssets
+    };
 
     return {
         setup,
         state,
         resume,
-        pause,
-        externalMovement,
-        drawImg
+        pause
     }
 }
