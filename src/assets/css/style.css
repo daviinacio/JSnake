@@ -25,23 +25,46 @@ main.container {
     align-items: center;
     height: 100vh;
     padding: 0;
-}
-
-main.container div {
-    width: 100%;
-    display: block;
     text-align: center;
 }
 
-main.container div canvas {
-    margin: auto;
+div.center {
+    width: 100%;
+    display: block;
+}
+
+.wrap * {
+    margin: 0;
+    padding: 0;
+}
+
+.wrap {
+    margin: 0 auto;
     width: 75vh;
-    /*height: 75vh;*/
+}
+
+.wrap canvas {
+    margin: 0;
+    width: 100%;
     max-width: calc(100% - 8px);
 }
 
+.hud {
+    font-family: "Joystix";
+    font-size: 20px;
+    padding: 5px 0;
+}
+
+.hud p {
+    text-align: center;
+}
+
 canvas {
-    border: 4px #000 solid;
+    /* border: 4px #000 solid; */
+}
+
+.wrap, canvas {
+    border: 1px #000 solid;
 }
 
 
@@ -50,8 +73,13 @@ body {
     background: #333;
 }
 
-canvas {
-    border-color: #999;
+.wrap, canvas {
+    border-color: #777;
+    color: #aaa;
+}
+
+.wrap {
+    background: #222;
 }
 
 #game, #img_assets img {

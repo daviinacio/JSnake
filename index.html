@@ -14,30 +14,49 @@ Created by daviinacio on 03/12/2019
         <meta name="author" content="Davi Inácio" />
 
         <title>daviinacio/JSnake: A Snake game made with JavaScript and Canvas</title>
-        <meta name="description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub.">
-        <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
-        <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
-        <meta property="fb:app_id" content="1401488693436528">
+        <meta name="description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub." />
+        <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
+        <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
+        <meta property="fb:app_id" content="1401488693436528" />
 
-        <meta name="twitter:image:src" content="https://daviinacio.com.br/JSnake/src/assets/img/bunner.png" /><meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary" /><meta name="twitter:title" content="daviinacio/JSnake" /><meta name="twitter:description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub." />
-        <meta property="og:image" content="https://daviinacio.com.br/JSnake/src/assets/img/bunner.png" /><meta property="og:site_name" content="GitHub" /><meta property="og:type" content="object" /><meta property="og:title" content="daviinacio/JSnake" /><meta property="og:url" content="https://github.com/daviinacio/JSnake" /><meta property="og:description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub." />
+        <meta name="twitter:image:src" content="https://daviinacio.com.br/JSnake/src/assets/img/bunner.png" />
+        <meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="daviinacio/JSnake" />
+        <meta name="twitter:description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub." />
+        <meta property="og:image" content="https://daviinacio.com.br/JSnake/src/assets/img/bunner.png" />
+        <meta property="og:site_name" content="GitHub" />
+        <meta property="og:type" content="object" />
+        <meta property="og:title" content="daviinacio/JSnake" />
+        <meta property="og:url" content="https://github.com/daviinacio/JSnake" />
+        <meta property="og:description" content="A Snake game made with JavaScript and Canvas. Contribute to daviinacio/JSnake development by creating an account on GitHub." />
 
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
+        <link rel="stylesheet" href="src/assets/css/bootstrap-grid.min.css"/>
         <link rel="stylesheet" href="src/assets/css/style.css"/>
 
     </head>
     <body>
         <main class="container">
-            <div>
-                <canvas id="game" width="1" height="1"></canvas>
-            </div>
-            <div class="only-mobile" style="display: none">
-                <div>
-                    <button id="input_up">Up</button>
-                    <button id="input_down">Down</button>
-                    <button id="input_left">Left</button>
-                    <button id="input_right">Right</button>
+            <div class="center">
+                <div class="wrap">
+                    <div class="hud">
+                        <div class="row">
+                            <div class="col-4">
+                                <p>FPS</p>
+                                <p id="hud-fps">0</p>
+                            </div>
+                            <div class="col-4">
+                                <p>SCORE</p>
+                                <p id="hud-score">0</p>
+                            </div>
+                            <div class="col-4">
+                                <p>TIME</p>
+                                <p id="hud-time">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="game" width="1" height="1"></canvas>
                 </div>
             </div>
         </main>
@@ -51,8 +70,17 @@ Created by daviinacio on 03/12/2019
 
             game.addEventListener('fps', function(e){
                 const { value } = e;
+                document.querySelector('#hud-fps').innerHTML = value;
+            });
 
-                //console.log("[FPS]: " + value);
+            game.addEventListener('time', function(e){
+                const { value } = e;
+                document.querySelector('#hud-time').innerHTML = value;
+            });
+
+            game.addEventListener('score', function(e){
+                const { value } = e;
+                document.querySelector('#hud-score').innerHTML = value;
             });
 
             document.body.onblur = game.pause;

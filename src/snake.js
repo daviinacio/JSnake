@@ -3,11 +3,10 @@ import TouchscreenListener from './touchscreen-listener.js';
 import AssetsLoader from './assets-loader.js';
 
 export default function Snake(){
-    var canvas, ctx, frames = 0, length = 15,
+    var canvas, ctx, frames = 0, time = 0, length = 15,
     running = true,
     assets_resolution = 16,
     assets_enabled = true,
-    hud_enabled = true,
     cache = {};
     
     const assets = new AssetsLoader('src/assets/skin').load('snake');
@@ -32,7 +31,8 @@ export default function Snake(){
     const state = {
         players: [],
         foods: [],
-        obstacles: []
+        obstacles: [],
+        time: 0
     };
     
 
@@ -59,7 +59,10 @@ export default function Snake(){
 
             cache.lastcheck = frames;
 
+            if(running) state.time++;
+
             handleEvents('fps', state.fps);
+            handleEvents('time', state.time);
 
         }, 1000);
 
@@ -114,15 +117,6 @@ export default function Snake(){
         state.obstacles.forEach(function(obstacle){
             draw(undefined, obstacle.x, obstacle.y, default_colors.obstacle);
         });
-
-        // Draw hud
-        if(hud_enabled){
-            if(state.fps){
-                ctx.font = (assets_resolution / 2) + "px Joystix";
-                ctx.fillStyle = default_colors.hud;
-                ctx.fillText(state.fps + "FPS", assets_resolution / 4, assets_resolution / 2);
-            }
-        }
     }
 
     // Draw on canvas
@@ -165,8 +159,10 @@ export default function Snake(){
         state.players = [];
         state.obstacles = [];
         state.speed = 1;
+        state.time = 0;
 
         spawnPlayer();
+        handleEvents('score', 0);
 
         next();
     }
@@ -205,7 +201,7 @@ export default function Snake(){
     function handleEvents(variable, value){
         events.forEach(function(event){
             if(event.variable == variable &&
-                typeof(variable) != 'undefined',
+                typeof(variable) != 'undefined' &&
                 typeof(value) != 'undefined'){
                 event.callback({
                     value
@@ -269,8 +265,11 @@ export default function Snake(){
             if(player.x == food.x && player.y == food.y){
                 a.splice(i, 1);
                 player.length++;
-                player.score += 100;
+                player.score += 1;
                 state.speed += 0.1;
+                
+                handleEvents('score', player.score);
+
                 next();
             }
         });
