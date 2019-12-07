@@ -6,11 +6,9 @@ export default function KeyboardListener(input, canvas){
             'ArrowDown': input.down,
             'ArrowLeft': input.left,
             'ArrowRight': input.right,
-            'p': input.pause,
+            'p': input.togglePlayPause,
             'q': input.toggleAssets
         };
-
-        console.log();
 
         const move = knownKeys[keyName];
 

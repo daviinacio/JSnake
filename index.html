@@ -30,7 +30,7 @@ Created by daviinacio on 03/12/2019
     <body>
         <main class="container">
             <div>
-                <canvas id="game"></canvas>
+                <canvas id="game" width="1" height="1"></canvas>
             </div>
             <div class="only-mobile" style="display: none">
                 <div>
@@ -48,6 +48,12 @@ Created by daviinacio on 03/12/2019
             window.game = new Snake();
 
             game.setup('game');
+
+            game.addObserver('fps', function(e){
+                const { value } = e;
+
+                console.log("[FPS]: " + value);
+            });
 
             document.body.onblur = game.pause;
         </script>
