@@ -1,3 +1,17 @@
+@font-face {
+    font-family: 'PDark';
+    src: url('../font/pdark.ttf');
+    font-style: normal;
+    -webkit-font-smoothing: none;
+}
+
+@font-face {
+    font-family: 'Joystix';
+    src: url('../font/joystix monospace.ttf');
+    font-style: normal;
+    -webkit-font-smoothing: none;
+}
+
 body {
     margin: 0;
     padding: 0;

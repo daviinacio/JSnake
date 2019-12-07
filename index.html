@@ -49,10 +49,10 @@ Created by daviinacio on 03/12/2019
 
             game.setup('game');
 
-            game.addObserver('fps', function(e){
+            game.addEventListener('fps', function(e){
                 const { value } = e;
 
-                console.log("[FPS]: " + value);
+                //console.log("[FPS]: " + value);
             });
 
             document.body.onblur = game.pause;

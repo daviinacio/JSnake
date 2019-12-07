@@ -7,12 +7,13 @@ export default function Snake(){
     running = true,
     assets_resolution = 16,
     assets_enabled = true,
+    hud_enabled = true,
     cache = {};
     
     const assets = new AssetsLoader('src/assets/skin').load('snake');
     const inputs = [];
     const threads = [];
-    const observers = [];
+    const events = [];
 
     const speed_delay = 300;
 
@@ -24,7 +25,8 @@ export default function Snake(){
         food: "#f00",
         obstacle: "#00f",
         pause_bg: "#222",
-        pause_fg: "#0a4"
+        pause_fg: "#0a4",
+        hud: "#000"
     };
 
     const state = {
@@ -57,7 +59,7 @@ export default function Snake(){
 
             cache.lastcheck = frames;
 
-            handleObservers('fps', state.fps);
+            handleEvents('fps', state.fps);
 
         }, 1000);
 
@@ -112,6 +114,15 @@ export default function Snake(){
         state.obstacles.forEach(function(obstacle){
             draw(undefined, obstacle.x, obstacle.y, default_colors.obstacle);
         });
+
+        // Draw hud
+        if(hud_enabled){
+            if(state.fps){
+                ctx.font = (assets_resolution / 2) + "px Joystix";
+                ctx.fillStyle = default_colors.hud;
+                ctx.fillText(state.fps + "FPS", assets_resolution / 4, assets_resolution / 2);
+            }
+        }
     }
 
     // Draw on canvas
@@ -183,20 +194,20 @@ export default function Snake(){
         assets_enabled = !assets_enabled;
     }
 
-    function addObserver(variable, event){
-        if(typeof(variable) === 'string' && typeof(event) === 'function'){
-            observers.push({
-                variable, event
+    function addEventListener(variable, callback){
+        if(typeof(variable) === 'string' && typeof(callback) === 'function'){
+            events.push({
+                variable, callback
             });
         }
     }
 
-    function handleObservers(variable, value){
-        observers.forEach(function(observer){
-            if(observer.variable == variable &&
+    function handleEvents(variable, value){
+        events.forEach(function(event){
+            if(event.variable == variable &&
                 typeof(variable) != 'undefined',
                 typeof(value) != 'undefined'){
-                observer.event({
+                event.callback({
                     value
                 });
             }
@@ -350,6 +361,6 @@ export default function Snake(){
         state,
         resume,
         pause,
-        addObserver
+        addEventListener
     }
 }
