@@ -59,10 +59,24 @@ Created by daviinacio on 03/12/2019
 
         <script type="module">
             import Snake from './src/snake.js';
+			import Toast from './src/toast.js';
+			
+			//new Toast().show({});
 
             window.game = new Snake();
 
             game.setup('game');
+			
+			game.stop();
+			Toast.show({
+				title: "Você perdeu!",
+				message: [
+					"Você não pode se comer!!",
+					"Está com fome?!",
+					"Você é vegetariano(a) e não canibal"
+				],
+				timeout: 1000
+			});
 
             game.addEventListener('fps', function(e){
                 const { value } = e;
@@ -80,11 +94,23 @@ Created by daviinacio on 03/12/2019
             });
 			
 			game.addEventListener('self', function(e){
-				//alert("Você não pode se comer!!!");
+				Toast.show({
+					title: "Você perdeu!",
+					message: [
+						"Você não pode se comer!!",
+						"Está com fome?!",
+						"Você é vegetariano(a) e não canibal"
+					],
+					timeout: 1000
+				});
             });
 			
 			game.addEventListener('wall', function(e){
-				//alert("Você não pode colidir com as paredes!!!");
+				Toast.show({
+					title: "Você perdeu!",
+					message: "Tente não colidir com as paredes na próxima vez!!",
+					timeout: 1000
+				});
             });
 
             document.body.onblur = game.pause;

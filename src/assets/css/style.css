@@ -96,7 +96,43 @@ body {
     image-rendering: crisp-edges;
 }
 
+/* Toast */
+#toast-overlay {
+	box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, 0.7);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+	opacity: 0;
+}
+
+#toast-overlay.focus {
+	opacity: 1;
+}
+
+#toast-overlay > div {
+	background: #eee;
+	padding: 10px;
+}
+
+#toast-overlay .title {
+	width: 100%;
+	background: #aaa;
+}
+
 /* Helpers */
 .only-mobile {
     
 }
+
+
+
+
+
+
+
+
