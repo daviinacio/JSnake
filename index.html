@@ -59,6 +59,9 @@ Created by daviinacio on 03/12/2019
 
         <script type="module">
             import Snake from './src/snake.js';
+			import Toast from './src/toast.js';
+			
+			//new Toast().show({});
 
             window.game = new Snake();
 
@@ -80,11 +83,31 @@ Created by daviinacio on 03/12/2019
             });
 			
 			game.addEventListener('self', function(e){
-				//alert("Você não pode se comer!!!");
+				Toast.show({
+					title: "Você perdeu!",
+					message: [
+						"Você não pode se comer!!",
+						"Está com fome?!",
+						"Você é vegetariano(a) e não canibal"
+					],
+					timeout: 1500,
+                    color: "#c51a1a",
+                    dismiss: function(){
+                        e.value.reset();
+                    }
+				});
             });
 			
 			game.addEventListener('wall', function(e){
-				//alert("Você não pode colidir com as paredes!!!");
+				Toast.show({
+					title: "Você perdeu!",
+					message: "Tente não colidir com as paredes na próxima vez!!",
+					timeout: 1500,
+                    color: "#c51a1a",
+                    dismiss: function(){
+                        e.value.reset();
+                    }
+				});
             });
 
             document.body.onblur = game.pause;

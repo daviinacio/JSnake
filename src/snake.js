@@ -168,6 +168,7 @@ export default function Snake(){
 
     //      Game        Game         Game          Game          Game      
     function reset(){
+        running = 'play';
         state.foods = [];
         state.players = [];
         state.obstacles = [];
@@ -194,7 +195,7 @@ export default function Snake(){
 
     function resume(){
 		if(running === 'stop')
-			reset();
+			return;
 		
         running = 'play';
     }
@@ -310,9 +311,7 @@ export default function Snake(){
 				
 				handleEvents('lose', {});
 				handleEvents('self', {
-					resume,
-					pause,
-					stop,
+					reset
 				});
             }
         });
@@ -323,9 +322,7 @@ export default function Snake(){
 			
 			handleEvents('lose', {});
 			handleEvents('wall', {
-				resume,
-				pause,
-				stop,
+				reset
 			});
         }
     }
