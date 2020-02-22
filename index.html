@@ -52,7 +52,7 @@ Created by daviinacio on 03/12/2019
 							<p id="hud-time">0</p>
 						</div>
                     </div>
-                    <canvas id="game" width="1" height="1"></canvas>
+                    <canvas id="game" width="1" height="1" />
                 </div>
             </div>
         </main>
@@ -77,6 +77,14 @@ Created by daviinacio on 03/12/2019
             game.addEventListener('score', function(e){
                 const { value } = e;
                 document.querySelector('#hud-score').innerHTML = value;
+            });
+			
+			game.addEventListener('self', function(e){
+				//alert("Você não pode se comer!!!");
+            });
+			
+			game.addEventListener('wall', function(e){
+				//alert("Você não pode colidir com as paredes!!!");
             });
 
             document.body.onblur = game.pause;

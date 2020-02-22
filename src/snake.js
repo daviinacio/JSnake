@@ -4,7 +4,7 @@ import AssetsLoader from './assets-loader.js';
 
 export default function Snake(){
     var canvas, ctx, frames = 0, time = 0, length = 15,
-    running = true,
+    running = 'play',
     assets_resolution = 16,
     assets_enabled = true,
     cache = {};
@@ -23,8 +23,9 @@ export default function Snake(){
         player_corder: "#d70",
         food: "#f00",
         obstacle: "#00f",
-        pause_bg: "#222",
+        dark_bg: "#222",
         pause_fg: "#0a4",
+		stop_fg: "#c51a1a",
         hud: "#000"
     };
 
@@ -59,7 +60,7 @@ export default function Snake(){
 
             cache.lastcheck = frames;
 
-            if(running) state.time++;
+            if(running === 'play') state.time++;
 
             handleEvents('fps', state.fps);
             handleEvents('time', state.time);
@@ -82,13 +83,25 @@ export default function Snake(){
         frames++;
 
         // Draw pause
-        if(!running){
+        if(running === 'pause'){
             const middle = parseInt(length / 2);
 
-            draw(undefined, 0, 0, default_colors.pause_bg, canvas.width, canvas.height);
+            draw(undefined, 0, 0, default_colors.dark_bg, canvas.width, canvas.height);
 
-            draw(undefined, (middle - 1), (middle - 1), default_colors.pause_fg, undefined, 3);
-            draw(undefined, (middle + 1), (middle - 1), default_colors.pause_fg, undefined, 3);
+            draw(undefined, (middle - 1), (middle - 2), default_colors.pause_fg, undefined, 5);
+            draw(undefined, (middle + 1), (middle - 2), default_colors.pause_fg, undefined, 5);
+            return;
+        }
+		
+		// Draw stop
+		if(running === 'stop'){
+            const middle = parseInt(length / 2);
+
+            draw(undefined, 0, 0, default_colors.dark_bg, canvas.width, canvas.height);
+
+            draw(undefined, (middle - 2), (middle - 2), default_colors.stop_fg, 5, 5);
+			draw(undefined, (middle - 1), (middle - 1), default_colors.dark_bg, 3, 3);
+			draw(undefined, middle, middle, default_colors.stop_fg, 1, 1);
             return;
         }
 
@@ -173,15 +186,31 @@ export default function Snake(){
     }
 
     function pause(){
-        running = false;
+		if(running === 'stop')
+			return;
+		
+        running = 'pause';
     }
 
     function resume(){
-        running = true;
+		if(running === 'stop')
+			reset();
+		
+        running = 'play';
     }
+	
+	function stop(){
+		running = 'stop';
+	}
 
     function togglePlayPause(){
-        running = !running;
+		if(running === 'play')
+			running = 'pause';
+		else
+		if(running === 'pause')
+			running = 'play';
+		else
+			running = 'stop';
     }
 
     function toggleAssets(enabled){
@@ -277,15 +306,27 @@ export default function Snake(){
         // Player eat herself
         player.body.forEach(function(member){
             if(player.x == member.x && player.y == member.y){
-                alert("Você não pode se comer");
-                reset();
+				stop();
+				
+				handleEvents('lose', {});
+				handleEvents('self', {
+					resume,
+					pause,
+					stop,
+				});
             }
         });
 
         // Player colides with borders
         if(player.x < 0 || player.x >= length || player.y < 0 || player.y >= length){
-            alert("Você não pode colidir com as paredes");
-            reset();
+			stop();
+			
+			handleEvents('lose', {});
+			handleEvents('wall', {
+				resume,
+				pause,
+				stop,
+			});
         }
     }
 
@@ -294,7 +335,7 @@ export default function Snake(){
 
         threads.speed = setInterval(function(){
             state.players.forEach(function(player){
-                if(!running) return;
+                if(running !== 'play') return;
 
                 registerBody(player);
 
@@ -360,6 +401,7 @@ export default function Snake(){
         state,
         resume,
         pause,
+		stop,
         addEventListener
     }
 }
