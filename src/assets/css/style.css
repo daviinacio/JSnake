@@ -98,34 +98,23 @@ body {
 
 /* Toast */
 #toast-overlay {
-	box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, 0.5);
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	display: flex;
+    box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
     justify-content: center;
     align-items: center;
-	opacity: 0;
+    opacity: 0;
     transition: opacity 0.5s;
 }
 
 #toast-overlay.focus {
-	opacity: 1;
+    opacity: 1;
+    display: flex;
 }
-
-/*#toast-overlay::before {
-    content:"";
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    width: 100%;
-    height: 5px;
-    background: white;
-}*/
-
 
 #toast-overlay * {
     display: block;
@@ -133,13 +122,14 @@ body {
 
 #toast-overlay > div {
     min-width: 300px;
-	background: #1d1d1d;
+    background: #1d1d1d;
     color: #ccc;
     overflow: hidden;
     box-shadow: 
         0 4px 10px 0 rgba(0, 0, 0, 0.8),
         0 4px 20px 0 rgba(0, 0, 0, 0.8);
     /*border-top: 5px #c51a1a solid;*/
+    margin: 0 10px;
 }
 
 .progress {
