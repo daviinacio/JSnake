@@ -43,7 +43,7 @@ function Toast(){
     })(document);
 
     function show(args){
-        const { title, message, buttons, timeout, dismiss } = args;
+        const { title, message, buttons, timeout, dismiss, color } = args;
 
         element.overlay.classList.add('focus');
 
@@ -84,7 +84,11 @@ function Toast(){
                 }
             }, timeout / 100);
         }
-	}
+        
+        if(color){
+            element.progress.style.backgroundColor = color;
+        }
+    }
 
     function _dismiss(){
         element.overlay.classList.remove('focus');
