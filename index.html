@@ -66,17 +66,6 @@ Created by daviinacio on 03/12/2019
             window.game = new Snake();
 
             game.setup('game');
-			
-			game.stop();
-			Toast.show({
-				title: "Você perdeu!",
-				message: [
-					"Você não pode se comer!!",
-					"Está com fome?!",
-					"Você é vegetariano(a) e não canibal"
-				],
-				timeout: 1000
-			});
 
             game.addEventListener('fps', function(e){
                 const { value } = e;
@@ -101,7 +90,10 @@ Created by daviinacio on 03/12/2019
 						"Está com fome?!",
 						"Você é vegetariano(a) e não canibal"
 					],
-					timeout: 1000
+					timeout: 1500,
+                    dismiss: function(){
+                        e.value.resume();
+                    }
 				});
             });
 			
@@ -109,7 +101,10 @@ Created by daviinacio on 03/12/2019
 				Toast.show({
 					title: "Você perdeu!",
 					message: "Tente não colidir com as paredes na próxima vez!!",
-					timeout: 1000
+					timeout: 1500,
+                    dismiss: function(){
+                        e.value.resume();
+                    }
 				});
             });
 
