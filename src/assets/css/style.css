@@ -48,13 +48,18 @@ div.center {
 .wrap canvas {
     margin: 0;
     width: 100%;
-    max-width: calc(100% - 8px);
+    max-width: calc(100% - 10px);
 }
 
 .hud {
     font-family: "Joystix";
     font-size: 20px;
     padding: 5px 0;
+	display: flex;
+}
+
+.hud > div {
+	flex: 1;
 }
 
 .hud p {
