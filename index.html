@@ -59,13 +59,25 @@ Created by daviinacio on 03/12/2019
 
         <script type="module">
             import Snake from './src/snake.js';
-			import Toast from './src/toast.js';
-			
-			//new Toast().show({});
+            import Toast from './src/toast.js';
+            
+            const window_width = window.innerWidth;
 
-            window.game = new Snake();
+            window.game = new Snake({
+                // Responsible game size
+                length: window_width > 768 ? 22 : 15
+            });
 
-            game.setup('game');
+            // Refresh on scale change
+            window.addEventListener('resize', function(e){
+                if(window_width >= 768 && window.innerWidth >= 768) return;
+                if(window_width <= 768 && window.innerWidth <= 768) return;
+
+                game.pause();
+                location.reload();
+            });
+
+            game.setup('#game');
 
             game.addEventListener('fps', function(e){
                 const { value } = e;

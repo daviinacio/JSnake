@@ -2,8 +2,8 @@ import KeyboardListener from './keyboard-listener.js';
 import TouchscreenListener from './touchscreen-listener.js';
 import AssetsLoader from './assets-loader.js';
 
-export default function Snake(){
-    var canvas, ctx, frames = 0, time = 0, length = 15,
+export default function Snake({ length = 15 }){
+    var canvas, ctx, frames = 0, time = 0,
     running = 'play',
     assets_resolution = 16,
     assets_enabled = true,
@@ -37,8 +37,8 @@ export default function Snake(){
     };
     
 
-    function setup(canvasId, _length){
-        canvas = document.getElementById(canvasId);
+    function setup(canvasElement, _length){
+        canvas = document.querySelector(canvasElement);
 
         if(typeof(_length) != 'undefined')
             length = _length;
