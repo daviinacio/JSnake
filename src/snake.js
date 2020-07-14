@@ -289,7 +289,7 @@ export default function Snake(){
         player.body = player.body.slice(0, length);
     }
 
-    function checkColision(player){
+    function checkCollision(player){
         // Player eat a food
         state.foods.forEach(function(food, i, a){
             if(player.x == food.x && player.y == food.y){
@@ -317,14 +317,14 @@ export default function Snake(){
         });
 
         // Player colides with borders
-        if(player.x < 0 || player.x >= length || player.y < 0 || player.y >= length){
+        /*if(player.x < 0 || player.x >= length || player.y < 0 || player.y >= length){
 			stop();
 			
 			handleEvents('lose', {});
 			handleEvents('wall', {
 				reset
 			});
-        }
+        }*/
     }
 
     function moveThread(){
@@ -336,6 +336,7 @@ export default function Snake(){
 
                 registerBody(player);
 
+                // Player direction
                 switch(player.dir){
                     //  [Up]
                     case 0: player.y--; break;
@@ -350,7 +351,23 @@ export default function Snake(){
                     case 3: player.x++; break;
                 }
 
-                checkColision(player);
+                checkCollision(player);
+
+                // Teleport the player through the walls
+                if(player.dir == 0 && player.y < 0)
+                    player.y = length -1;
+                
+                else
+                if(player.dir == 1 && player.y >= length)
+                    player.y = 0;
+
+                else
+                if(player.dir == 2 && player.x < 0)
+                    player.x = length -1;
+
+                else
+                if(player.dir == 3 && player.x >= length)
+                    player.x = 0;
 
                 player.canMove = true;
             });
