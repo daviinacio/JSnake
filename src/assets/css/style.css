@@ -196,10 +196,8 @@ button:hover, button:active {
     
 }
 
-
-
-
-
-
-
-
+@media (min-width: 768px) {
+    .wrap {
+        max-width: 731px;
+    }
+}
