@@ -60,6 +60,8 @@ Created by daviinacio on 03/12/2019
         <script type="module">
             import Snake from './src/snake.js';
             import Toast from './src/toast.js';
+
+            const toast_delay = 2000;
             
             const window_width = window.innerWidth;
 
@@ -102,7 +104,7 @@ Created by daviinacio on 03/12/2019
 						"Está com fome?!",
 						"Você é vegetariano(a) e não canibal"
 					],
-					timeout: 1500,
+					timeout: toast_delay,
                     color: "#c51a1a",
                     dismiss: function(){
                         e.value.reset();
@@ -114,7 +116,19 @@ Created by daviinacio on 03/12/2019
 				Toast.show({
 					title: "Você perdeu!",
 					message: "Tente não colidir com as paredes na próxima vez!!",
-					timeout: 1500,
+					timeout: toast_delay,
+                    color: "#c51a1a",
+                    dismiss: function(){
+                        e.value.reset();
+                    }
+				});
+            });
+
+            game.addEventListener('obstacle', function(e){
+				Toast.show({
+					title: "Você perdeu!",
+					message: "Tente não colidir com os obstáculos a próxima vez!!",
+					timeout: toast_delay,
                     color: "#c51a1a",
                     dismiss: function(){
                         e.value.reset();

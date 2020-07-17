@@ -2,6 +2,8 @@ import KeyboardListener from './keyboard-listener.js';
 import TouchscreenListener from './touchscreen-listener.js';
 import AssetsLoader from './assets-loader.js';
 
+import levels from './levels.js';
+
 export default function Snake({ length = 15 }){
     var canvas, ctx, frames = 0, time = 0,
     running = 'play',
@@ -67,6 +69,8 @@ export default function Snake({ length = 15 }){
 
         }, 1000);
 
+        //console.log(state.obstacles);
+
         reset();
 
         run();
@@ -126,9 +130,13 @@ export default function Snake({ length = 15 }){
             draw(assets.food[food.type], food.x, food.y, default_colors.food);
         });
 
+        //console.log(state.obstacles);
+
         //Draw obstacles
         state.obstacles.forEach(function(obstacle){
-            draw(undefined, obstacle.x, obstacle.y, default_colors.obstacle);
+            //console.log(obstacle);
+
+            draw(undefined, obstacle.x, obstacle.y, default_colors.obstacle, obstacle.width, obstacle.height);
         });
     }
 
@@ -145,6 +153,10 @@ export default function Snake({ length = 15 }){
         else
         if(height <= length)
             height = (canvas.height/length) * height;
+
+        // Reverse position
+        if(x < 0) x = length + x -1;
+        if(y < 0) y = length + y -1;
 
         if(typeof(alternative_color) === 'undefined')
             alternative_color = "#fff";
@@ -174,6 +186,8 @@ export default function Snake({ length = 15 }){
         state.obstacles = [];
         state.speed = 1;
         state.time = 0;
+
+        state.obstacles = levels[0].obstacles;
 
         spawnPlayer();
         handleEvents('score', 0);
@@ -242,9 +256,10 @@ export default function Snake({ length = 15 }){
 
     //      Objects     Objects     Objects     Objects     Objects
     function spawnFood(){
+        const { x, y } = getEmptyPlace();
+
         state.foods.push({
-            x: parseInt(Math.random() * (length)),
-            y: parseInt(Math.random() * (length)),
+            x, y,
             type: parseInt(Math.random() * (assets.food.length))
         });
     }
@@ -325,6 +340,72 @@ export default function Snake({ length = 15 }){
 				reset
 			});
         }*/
+
+        // Player colides with obstacles
+        state.obstacles.forEach(function(obstacle){
+            // Reverse position
+            if(obstacle.x < 0) obstacle.x = length + obstacle.x -1;
+            if(obstacle.y < 0) obstacle.y = length + obstacle.y -1;
+
+            if(
+                player.x >= obstacle.x && player.x < obstacle.x + (obstacle.width || 1) &&
+                player.y >= obstacle.y && player.y < obstacle.y + (obstacle.height || 1)
+            ){
+                stop();
+				
+				handleEvents('lose', {});
+                handleEvents('obstacle', {
+                    reset
+                });
+            }
+        });
+    }
+
+    function checkForEmptyPlace({ x, y }){
+        var empty = true;
+
+        state.foods.forEach(function(food){
+            if(x == food.x && y == food.y)
+                empty = false;
+        });
+
+        state.players.forEach((player) => {
+            player.body.forEach(function(member){
+                if(x == member.x && y == member.y)
+                    empty = false;
+            });
+        })
+
+        state.obstacles.forEach(function(obstacle){
+            if(obstacle.x < 0) obstacle.x = length + obstacle.x -1;
+            if(obstacle.y < 0) obstacle.y = length + obstacle.y -1;
+
+            if( x >= obstacle.x && x < obstacle.x + (obstacle.width || 1) &&
+                y >= obstacle.y && y < obstacle.y + (obstacle.height || 1))
+                empty = false;
+        });
+
+        return empty;
+    }
+
+    function getEmptyPlace(){
+        var x = 0, y = 0;
+
+        while(true){
+            x = parseInt(Math.random() * (length));
+            y = parseInt(Math.random() * (length));
+
+            console.log(x, y);
+
+            if(checkForEmptyPlace({ x, y })){
+                console.log("Fruit spawn position passed");
+                break;
+            }
+        }
+
+        return {
+            x, y
+        }
     }
 
     function moveThread(){
