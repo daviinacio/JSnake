@@ -66,9 +66,9 @@ div.center {
     text-align: center;
 }
 
-canvas {
-    /* border: 4px #000 solid; */
-}
+/* canvas {
+    border: 4px #000 solid;
+} */
 
 .wrap, canvas {
     border: 1px #000 solid;
@@ -170,8 +170,7 @@ body {
     padding: 10px;
 }
 
-#toast-overlay #button-container > div > button {
-}
+/* #toast-overlay #button-container > div > button {} */
 
 button {
     display: inline-block !important;
@@ -192,9 +191,7 @@ button:hover, button:active {
 }
 
 /* Helpers */
-.only-mobile {
-    
-}
+/* .only-mobile {} */
 
 @media (min-width: 768px) {
     .wrap {

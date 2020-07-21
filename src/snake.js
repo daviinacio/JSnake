@@ -27,7 +27,7 @@ export default function Snake({ length = 15 }){
         obstacle: "#00f",
         dark_bg: "#222",
         pause_fg: "#0a4",
-		stop_fg: "#c51a1a",
+        stop_fg: "#c51a1a",
         hud: "#000"
     };
 
@@ -96,16 +96,16 @@ export default function Snake({ length = 15 }){
             draw(undefined, (middle + 1), (middle - 2), default_colors.pause_fg, undefined, 5);
             return;
         }
-		
-		// Draw stop
-		if(running === 'stop'){
+        
+        // Draw stop
+        if(running === 'stop'){
             const middle = parseInt(length / 2);
 
             draw(undefined, 0, 0, default_colors.dark_bg, canvas.width, canvas.height);
 
             draw(undefined, (middle - 2), (middle - 2), default_colors.stop_fg, 5, 5);
-			draw(undefined, (middle - 1), (middle - 1), default_colors.dark_bg, 3, 3);
-			draw(undefined, middle, middle, default_colors.stop_fg, 1, 1);
+            draw(undefined, (middle - 1), (middle - 1), default_colors.dark_bg, 3, 3);
+            draw(undefined, middle, middle, default_colors.stop_fg, 1, 1);
             return;
         }
 
@@ -201,31 +201,31 @@ export default function Snake({ length = 15 }){
     }
 
     function pause(){
-		if(running === 'stop')
-			return;
-		
+        if(running === 'stop')
+            return;
+        
         running = 'pause';
     }
 
     function resume(){
-		if(running === 'stop')
-			return;
-		
+        if(running === 'stop')
+            return;
+        
         running = 'play';
     }
-	
-	function stop(){
-		running = 'stop';
-	}
+    
+    function stop(){
+        running = 'stop';
+    }
 
     function togglePlayPause(){
-		if(running === 'play')
-			running = 'pause';
-		else
-		if(running === 'pause')
-			running = 'play';
-		else
-			running = 'stop';
+        if(running === 'play')
+            running = 'pause';
+        else
+        if(running === 'pause')
+            running = 'play';
+        else
+            running = 'stop';
     }
 
     function toggleAssets(enabled){
@@ -321,7 +321,7 @@ export default function Snake({ length = 15 }){
 
                 case 'player_body':
                     stop();
-				
+                
                     handleEvents('lose', {});
                     handleEvents('self', {
                         reset
@@ -331,7 +331,7 @@ export default function Snake({ length = 15 }){
 
                 case 'obstacle':
                     stop();
-				
+                
                     handleEvents('lose', {});
                     handleEvents('obstacle', {
                         reset
@@ -502,7 +502,7 @@ export default function Snake({ length = 15 }){
         state,
         resume,
         pause,
-		stop,
+        stop,
         addEventListener
     }
 }

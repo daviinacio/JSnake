@@ -39,18 +39,18 @@ Created by daviinacio on 03/12/2019
             <div class="center">
                 <div class="wrap">
                     <div class="hud">
-						<div>
-							<p>FPS</p>
-							<p id="hud-fps">0</p>
-						</div>
-						<div>
-							<p>SCORE</p>
-							<p id="hud-score">0</p>
-						</div>
-						<div>
-							<p>TIME</p>
-							<p id="hud-time">0</p>
-						</div>
+                        <div>
+                            <p>FPS</p>
+                            <p id="hud-fps">0</p>
+                        </div>
+                        <div>
+                            <p>SCORE</p>
+                            <p id="hud-score">0</p>
+                        </div>
+                        <div>
+                            <p>TIME</p>
+                            <p id="hud-time">0</p>
+                        </div>
                     </div>
                     <canvas id="game" width="1" height="1" />
                 </div>
@@ -95,45 +95,45 @@ Created by daviinacio on 03/12/2019
                 const { value } = e;
                 document.querySelector('#hud-score').innerHTML = value;
             });
-			
-			game.addEventListener('self', function(e){
-				Toast.show({
-					title: "Você perdeu!",
-					message: [
-						"Você não pode se comer!!",
-						"Está com fome?!",
-						"Você é vegetariano(a) e não canibal"
-					],
-					timeout: toast_delay,
+            
+            game.addEventListener('self', function(e){
+                Toast.show({
+                    title: "Você perdeu!",
+                    message: [
+                        "Você não pode se comer!!",
+                        "Está com fome?!",
+                        "Você é vegetariano(a) e não canibal"
+                    ],
+                    timeout: toast_delay,
                     color: "#c51a1a",
                     dismiss: function(){
                         e.value.reset();
                     }
-				});
+                });
             });
-			
-			game.addEventListener('wall', function(e){
-				Toast.show({
-					title: "Você perdeu!",
-					message: "Tente não colidir com as paredes na próxima vez!!",
-					timeout: toast_delay,
+            
+            game.addEventListener('wall', function(e){
+                Toast.show({
+                    title: "Você perdeu!",
+                    message: "Tente não colidir com as paredes na próxima vez!!",
+                    timeout: toast_delay,
                     color: "#c51a1a",
                     dismiss: function(){
                         e.value.reset();
                     }
-				});
+                });
             });
 
             game.addEventListener('obstacle', function(e){
-				Toast.show({
-					title: "Você perdeu!",
-					message: "Tente não colidir com os obstáculos a próxima vez!!",
-					timeout: toast_delay,
+                Toast.show({
+                    title: "Você perdeu!",
+                    message: "Tente não colidir com os obstáculos a próxima vez!!",
+                    timeout: toast_delay,
                     color: "#c51a1a",
                     dismiss: function(){
                         e.value.reset();
                     }
-				});
+                });
             });
 
             document.body.onblur = game.pause;
