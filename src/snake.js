@@ -264,12 +264,8 @@ export default function Snake({ length = 15 }){
         });
     }
 
-    function spawnPlayer(x, y){
-        if(typeof(x) === 'undefined')
-            x = parseInt(Math.random() * (length - 0));
-
-        if(typeof(y) === 'undefined')
-            y = parseInt(Math.random() * (length - 0));
+    function spawnPlayer(){
+        const { x, y } = getEmptyPlace();
 
         state.players.push({
             x, y,
@@ -305,87 +301,101 @@ export default function Snake({ length = 15 }){
     }
 
     function checkCollision(player){
-        // Player eat a food
-        state.foods.forEach(function(food, i, a){
-            if(player.x == food.x && player.y == food.y){
-                a.splice(i, 1);
-                player.length++;
-                player.score += 1;
-                state.speed += 0.1;
-                
-                handleEvents('score', player.score);
-
-                next();
-            }
+        const content = findPlaceContent({
+            x: player.x, y: player.y
         });
 
-        // Player eat herself
-        player.body.forEach(function(member){
-            if(player.x == member.x && player.y == member.y){
-				stop();
+        content.forEach(function(item){
+            switch(item.type){
+                case 'food':
+                    state.foods.pop(item);
+
+                    player.length++;
+                    player.score += 1;
+                    state.speed += 0.1;
+                    
+                    handleEvents('score', player.score);
+
+                    next();
+                    break;
+
+                case 'player_body':
+                    stop();
 				
-				handleEvents('lose', {});
-				handleEvents('self', {
-					reset
-				});
-            }
-        });
+                    handleEvents('lose', {});
+                    handleEvents('self', {
+                        reset
+                    });
 
-        // Player colides with borders
-        /*if(player.x < 0 || player.x >= length || player.y < 0 || player.y >= length){
-			stop();
-			
-			handleEvents('lose', {});
-			handleEvents('wall', {
-				reset
-			});
-        }*/
+                    break;
 
-        // Player colides with obstacles
-        state.obstacles.forEach(function(obstacle){
-            // Reverse position
-            if(obstacle.x < 0) obstacle.x = length + obstacle.x -1;
-            if(obstacle.y < 0) obstacle.y = length + obstacle.y -1;
-
-            if(
-                player.x >= obstacle.x && player.x < obstacle.x + (obstacle.width || 1) &&
-                player.y >= obstacle.y && player.y < obstacle.y + (obstacle.height || 1)
-            ){
-                stop();
+                case 'obstacle':
+                    stop();
 				
-				handleEvents('lose', {});
-                handleEvents('obstacle', {
-                    reset
-                });
-            }
+                    handleEvents('lose', {});
+                    handleEvents('obstacle', {
+                        reset
+                    });
+                    break;
+            };
         });
     }
 
-    function checkForEmptyPlace({ x, y }){
-        var empty = true;
+    function findPlaceContent({ x, y }){
+        let content = [];
 
+        // There is some foods
         state.foods.forEach(function(food){
-            if(x == food.x && y == food.y)
-                empty = false;
+            if(x == food.x && y == food.y){
+                content.push({
+                    ...food, ...{
+                        type: 'food'
+                    }
+                })
+            }
         });
 
+        // There is some players
         state.players.forEach((player) => {
+
+            // There is some player head
+            if(x == player.x && y == player.y){
+                content.push({
+                    ...player, ... {
+                        type: 'player_head'
+                    }
+                });
+            }
+
+            // There is some player bodies
             player.body.forEach(function(member){
-                if(x == member.x && y == member.y)
-                    empty = false;
+                if(x == member.x && y == member.y){
+                    content.push({
+                        ...member, ... {
+                            type: 'player_body'
+                        }
+                    });
+                }
             });
         })
 
+        // There is some obstacles
         state.obstacles.forEach(function(obstacle){
             if(obstacle.x < 0) obstacle.x = length + obstacle.x -1;
             if(obstacle.y < 0) obstacle.y = length + obstacle.y -1;
 
             if( x >= obstacle.x && x < obstacle.x + (obstacle.width || 1) &&
-                y >= obstacle.y && y < obstacle.y + (obstacle.height || 1))
-                empty = false;
+                y >= obstacle.y && y < obstacle.y + (obstacle.height || 1)){
+                
+                content.push({
+                    ...obstacle, ... {
+                        type: 'obstacle'
+                    }
+                });
+            }
         });
 
-        return empty;
+        return content;
     }
 
     function getEmptyPlace(){
@@ -394,13 +404,9 @@ export default function Snake({ length = 15 }){
         while(true){
             x = parseInt(Math.random() * (length));
             y = parseInt(Math.random() * (length));
-
-            console.log(x, y);
-
-            if(checkForEmptyPlace({ x, y })){
-                console.log("Fruit spawn position passed");
+            
+            if(findPlaceContent({ x, y }).length == 0)
                 break;
-            }
         }
 
         return {
