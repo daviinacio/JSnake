@@ -4,13 +4,13 @@ import AssetsLoader from './assets-loader.js';
 
 import levels from './levels.js';
 
-export default function Snake({ length = 15 }){
+export default function Snake({ length = 15 }) {
     var canvas, ctx, frames = 0, time = 0,
-    running = 'play',
-    assets_resolution = 16,
-    assets_enabled = true,
-    cache = {};
-    
+        running = 'play',
+        assets_resolution = 16,
+        assets_enabled = true,
+        cache = {};
+
     const assets = new AssetsLoader('src/assets/skin').load('snake');
     const inputs = [];
     const threads = [];
@@ -20,9 +20,10 @@ export default function Snake({ length = 15 }){
 
     const default_colors = {
         map: "#50beff",
-        player_head: "#0f0",
+        player_head: "#e80",
         player_body: "#f90",
-        player_corder: "#d70",
+        player_corder: "#f90",
+        player_eaten_stop: "d70",
         food: "#f00",
         obstacle: "#00f",
         dark_bg: "#222",
@@ -37,32 +38,32 @@ export default function Snake({ length = 15 }){
         obstacles: [],
         time: 0
     };
-    
 
-    function setup(canvasElement, _length){
+
+    function setup(canvasElement, _length) {
         canvas = document.querySelector(canvasElement);
 
-        if(typeof(_length) != 'undefined')
+        if (typeof (_length) != 'undefined')
             length = _length;
 
         canvas.width = canvas.height = assets_resolution * length;
 
         //console.log(canvas.width, canvas.height, length);
-        
+
         ctx = canvas.getContext("2d");
 
         inputs.push(new KeyboardListener(input_interface, document));
         inputs.push(new TouchscreenListener(input_interface, canvas));
 
-        threads.fps = setInterval(function(){
-            if(typeof(cache.lastcheck) == 'undefined')
-                cache.lastcheck = frames;
+        threads.fps = setInterval(function () {
+            if (typeof (cache.last_check) == 'undefined')
+                cache.last_check = frames;
 
-            state.fps = frames - cache.lastcheck;
+            state.fps = frames - cache.last_check;
 
-            cache.lastcheck = frames;
+            cache.last_check = frames;
 
-            if(running === 'play') state.time++;
+            if (running === 'play') state.time++;
 
             handleEvents('fps', state.fps);
             handleEvents('time', state.time);
@@ -77,17 +78,17 @@ export default function Snake({ length = 15 }){
     }
 
     //      Canvas       Canvas      Canvas      Canvas      Canvas
-    function run(){
+    function run() {
         render();
         window.requestAnimationFrame(run);
     }
 
     // Draw states
-    function render(){
+    function render() {
         frames++;
 
         // Draw pause
-        if(running === 'pause'){
+        if (running === 'pause') {
             const middle = parseInt(length / 2);
 
             draw(undefined, 0, 0, default_colors.dark_bg, canvas.width, canvas.height);
@@ -96,9 +97,9 @@ export default function Snake({ length = 15 }){
             draw(undefined, (middle + 1), (middle - 2), default_colors.pause_fg, undefined, 5);
             return;
         }
-        
+
         // Draw stop
-        if(running === 'stop'){
+        if (running === 'stop') {
             const middle = parseInt(length / 2);
 
             draw(undefined, 0, 0, default_colors.dark_bg, canvas.width, canvas.height);
@@ -113,27 +114,27 @@ export default function Snake({ length = 15 }){
         draw(undefined, 0, 0, default_colors.map, canvas.width, canvas.height);
 
         // Draw players
-        state.players.forEach(function(player) {
+        state.players.forEach(function (player) {
             // Draw players body
-            player.body.forEach(function(body) {
-                if(typeof(body.corner) == 'undefined' || body.corner == -1)
-                    draw(assets.body[body.dir], body.x, body.y, default_colors.player_body);
+            player.body.forEach(function (chunk) {
+                if (typeof (chunk.corner) == 'undefined' || chunk.corner == -1)
+                    draw(assets.body[chunk.dir], chunk.x, chunk.y, default_colors.player_body);
                 else
-                    draw(assets.corner[body.corner.by][body.corner.to], body.x, body.y, default_colors.player_corder);
+                    draw(assets.corner[chunk.corner.by][chunk.corner.to], chunk.x, chunk.y, default_colors.player_corder);
             });
 
             draw(assets.head[player.dir], player.x, player.y, default_colors.player_head);
         });
-        
+
         //Draw foods
-        state.foods.forEach(function(food){
+        state.foods.forEach(function (food) {
             draw(assets.food[food.type], food.x, food.y, default_colors.food);
         });
 
         //console.log(state.obstacles);
 
         //Draw obstacles
-        state.obstacles.forEach(function(obstacle){
+        state.obstacles.forEach(function (obstacle) {
             //console.log(obstacle);
 
             draw(undefined, obstacle.x, obstacle.y, default_colors.obstacle, obstacle.width, obstacle.height);
@@ -141,45 +142,45 @@ export default function Snake({ length = 15 }){
     }
 
     // Draw on canvas
-    function draw(asset, x, y, alternative_color, width, height){
-        if(typeof(width) == 'undefined')
-            var width = canvas.width/length;
+    function draw(asset, x, y, alternative_color, width, height) {
+        if (typeof (width) == 'undefined')
+            var width = canvas.width / length;
         else
-        if(width <= length)
-            width = (canvas.height/length) * width;
+            if (width <= length)
+                width = (canvas.height / length) * width;
 
-        if(typeof(height) == 'undefined')
-            var height = canvas.height/length;
+        if (typeof (height) == 'undefined')
+            var height = canvas.height / length;
         else
-        if(height <= length)
-            height = (canvas.height/length) * height;
+            if (height <= length)
+                height = (canvas.height / length) * height;
 
         // Reverse position
-        if(x < 0) x = length + x -1;
-        if(y < 0) y = length + y -1;
+        if (x < 0) x = length + x - 1;
+        if (y < 0) y = length + y - 1;
 
-        if(typeof(alternative_color) === 'undefined')
+        if (typeof (alternative_color) === 'undefined')
             alternative_color = "#fff";
 
-        if(assets_enabled && asset){
+        if (assets_enabled && asset) {
             ctx.drawImage(
-                asset, 
-                x * (canvas.width/length), y * (canvas.width/length),
+                asset,
+                x * (canvas.width / length), y * (canvas.width / length),
                 width, height
             );
         }
         else {
             ctx.fillStyle = alternative_color;
             ctx.fillRect(
-                x * (canvas.width/length), y * (canvas.width/length),
+                x * (canvas.width / length), y * (canvas.width / length),
                 width, height
             );
         }
-        
+
     }
 
     //      Game        Game         Game          Game          Game      
-    function reset(){
+    function reset() {
         running = 'play';
         state.foods = [];
         state.players = [];
@@ -193,60 +194,61 @@ export default function Snake({ length = 15 }){
         handleEvents('score', 0);
 
         next();
+        spawnFood();
     }
 
-    function next(){
+    function next() {
         moveThread();
         spawnFood();
     }
 
-    function pause(){
-        if(running === 'stop')
+    function pause() {
+        if (running === 'stop')
             return;
-        
+
         running = 'pause';
     }
 
-    function resume(){
-        if(running === 'stop')
+    function resume() {
+        if (running === 'stop')
             return;
-        
+
         running = 'play';
     }
-    
-    function stop(){
+
+    function stop() {
         running = 'stop';
     }
 
-    function togglePlayPause(){
-        if(running === 'play')
+    function togglePlayPause() {
+        if (running === 'play')
             running = 'pause';
         else
-        if(running === 'pause')
-            running = 'play';
-        else
-            running = 'stop';
+            if (running === 'pause')
+                running = 'play';
+            else
+                running = 'stop';
     }
 
-    function toggleAssets(enabled){
-        if(typeof(enabled) != 'undefined')
+    function toggleAssets(enabled) {
+        if (typeof (enabled) != 'undefined')
             assets_enabled = enabled;
         assets_enabled = !assets_enabled;
     }
 
-    function addEventListener(variable, callback){
-        if(typeof(variable) === 'string' && typeof(callback) === 'function'){
+    function addEventListener(variable, callback) {
+        if (typeof (variable) === 'string' && typeof (callback) === 'function') {
             events.push({
                 variable, callback
             });
         }
     }
 
-    function handleEvents(variable, value){
-        events.forEach(function(event){
-            if(event.variable == variable &&
-                typeof(variable) != 'undefined' &&
-                typeof(value) != 'undefined'){
+    function handleEvents(variable, value) {
+        events.forEach(function (event) {
+            if (event.variable == variable &&
+                typeof (variable) != 'undefined' &&
+                typeof (value) != 'undefined') {
                 event.callback({
                     value
                 });
@@ -255,7 +257,7 @@ export default function Snake({ length = 15 }){
     }
 
     //      Objects     Objects     Objects     Objects     Objects
-    function spawnFood(){
+    function spawnFood() {
         const { x, y } = getEmptyPlace();
 
         state.foods.push({
@@ -264,7 +266,7 @@ export default function Snake({ length = 15 }){
         });
     }
 
-    function spawnPlayer(){
+    function spawnPlayer() {
         const { x, y } = getEmptyPlace();
 
         state.players.push({
@@ -278,42 +280,44 @@ export default function Snake({ length = 15 }){
     }
 
     //      Player      Player      Player      Player      Player
-    function registerBody(player){
-        const { x, y, dir, length } =  player;
+    function registerBody(player) {
+        const { x, y, dir, length } = player;
         const oldMember = player.body[0];
 
         var member = {
             x, y, dir
         };
 
-        if(typeof(oldMember) != 'undefined'){
+        if (typeof (oldMember) != 'undefined') {
             // Direction was changed
-            if(oldMember.dir != member.dir){
+            if (oldMember.dir != member.dir) {
                 member.corner = {
                     by: oldMember.dir,
                     to: member.dir
                 }
             }
         }
-        
+
         player.body.unshift(member);
         player.body = player.body.slice(0, length);
     }
 
-    function checkCollision(player){
+    function checkCollision(player) {
         const content = findPlaceContent({
             x: player.x, y: player.y
         });
 
-        content.forEach(function(item){
-            switch(item.type){
+        content.forEach(function (item) {
+            switch (item.type) {
                 case 'food':
-                    state.foods.pop(item);
+                    state.foods = state.foods.filter(
+                        (f) => !(f.x === player.x && f.y == player.y)
+                    );
 
                     player.length++;
                     player.score += 1;
                     state.speed += 0.1;
-                    
+
                     handleEvents('score', player.score);
 
                     next();
@@ -321,7 +325,7 @@ export default function Snake({ length = 15 }){
 
                 case 'player_body':
                     stop();
-                
+
                     handleEvents('lose', {});
                     handleEvents('self', {
                         reset
@@ -331,7 +335,7 @@ export default function Snake({ length = 15 }){
 
                 case 'obstacle':
                     stop();
-                
+
                     handleEvents('lose', {});
                     handleEvents('obstacle', {
                         reset
@@ -341,12 +345,12 @@ export default function Snake({ length = 15 }){
         });
     }
 
-    function findPlaceContent({ x, y }){
+    function findPlaceContent({ x, y }) {
         let content = [];
 
         // There is some foods
-        state.foods.forEach(function(food){
-            if(x == food.x && y == food.y){
+        state.foods.forEach(function (food) {
+            if (x == food.x && y == food.y) {
                 content.push({
                     ...food, ...{
                         type: 'food'
@@ -359,7 +363,7 @@ export default function Snake({ length = 15 }){
         state.players.forEach((player) => {
 
             // There is some player head
-            if(x == player.x && y == player.y){
+            if (x == player.x && y == player.y) {
                 content.push({
                     ...player, ... {
                         type: 'player_head'
@@ -368,10 +372,10 @@ export default function Snake({ length = 15 }){
             }
 
             // There is some player bodies
-            player.body.forEach(function(member){
-                if(x == member.x && y == member.y){
+            player.body.forEach(function (chunk) {
+                if (x == chunk.x && y == chunk.y) {
                     content.push({
-                        ...member, ... {
+                        ...chunk, ... {
                             type: 'player_body'
                         }
                     });
@@ -380,13 +384,13 @@ export default function Snake({ length = 15 }){
         })
 
         // There is some obstacles
-        state.obstacles.forEach(function(obstacle){
-            if(obstacle.x < 0) obstacle.x = length + obstacle.x -1;
-            if(obstacle.y < 0) obstacle.y = length + obstacle.y -1;
+        state.obstacles.forEach(function (obstacle) {
+            if (obstacle.x < 0) obstacle.x = length + obstacle.x - 1;
+            if (obstacle.y < 0) obstacle.y = length + obstacle.y - 1;
 
-            if( x >= obstacle.x && x < obstacle.x + (obstacle.width || 1) &&
-                y >= obstacle.y && y < obstacle.y + (obstacle.height || 1)){
-                
+            if (x >= obstacle.x && x < obstacle.x + (obstacle.width || 1) &&
+                y >= obstacle.y && y < obstacle.y + (obstacle.height || 1)) {
+
                 content.push({
                     ...obstacle, ... {
                         type: 'obstacle'
@@ -398,14 +402,14 @@ export default function Snake({ length = 15 }){
         return content;
     }
 
-    function getEmptyPlace(){
+    function getEmptyPlace() {
         var x = 0, y = 0;
 
-        while(true){
+        while (true) {
             x = parseInt(Math.random() * (length));
             y = parseInt(Math.random() * (length));
-            
-            if(findPlaceContent({ x, y }).length == 0)
+
+            if (findPlaceContent({ x, y }).length == 0)
                 break;
         }
 
@@ -414,17 +418,17 @@ export default function Snake({ length = 15 }){
         }
     }
 
-    function moveThread(){
-        if(threads.speed) clearInterval(threads.speed);
+    function moveThread() {
+        if (threads.speed) clearInterval(threads.speed);
 
-        threads.speed = setInterval(function(){
-            state.players.forEach(function(player){
-                if(running !== 'play') return;
+        threads.speed = setInterval(function () {
+            state.players.forEach(function (player) {
+                if (running !== 'play') return;
 
                 registerBody(player);
 
                 // Player direction
-                switch(player.dir){
+                switch (player.dir) {
                     //  [Up]
                     case 0: player.y--; break;
 
@@ -441,20 +445,20 @@ export default function Snake({ length = 15 }){
                 checkCollision(player);
 
                 // Teleport the player through the walls
-                if(player.dir == 0 && player.y < 0)
-                    player.y = length -1;
-                
-                else
-                if(player.dir == 1 && player.y >= length)
-                    player.y = 0;
+                if (player.dir == 0 && player.y < 0)
+                    player.y = length - 1;
 
                 else
-                if(player.dir == 2 && player.x < 0)
-                    player.x = length -1;
+                    if (player.dir == 1 && player.y >= length)
+                        player.y = 0;
 
-                else
-                if(player.dir == 3 && player.x >= length)
-                    player.x = 0;
+                    else
+                        if (player.dir == 2 && player.x < 0)
+                            player.x = length - 1;
+
+                        else
+                            if (player.dir == 3 && player.x >= length)
+                                player.x = 0;
 
                 player.canMove = true;
             });
@@ -462,33 +466,33 @@ export default function Snake({ length = 15 }){
     }
 
     const input_interface = {
-        up(){
+        up() {
             const player = state.players[0];
-            if(player.dir != 1 && player.dir != 0 && player.canMove){
+            if (player.dir != 1 && player.dir != 0 && player.canMove) {
                 player.dir = 0;
                 player.canMove = false;
                 return true;
             }
         },
-        down(){
+        down() {
             const player = state.players[0];
-            if(player.dir != 0 && player.dir != 1 && player.canMove){
+            if (player.dir != 0 && player.dir != 1 && player.canMove) {
                 player.dir = 1;
                 player.canMove = false;
                 return true;
             }
         },
-        left(){
+        left() {
             const player = state.players[0];
-            if(player.dir != 3 && player.dir != 2 && player.canMove){
+            if (player.dir != 3 && player.dir != 2 && player.canMove) {
                 player.dir = 2;
                 player.canMove = false;
                 return true;
             }
         },
-        right(){
+        right() {
             const player = state.players[0];
-            if(player.dir != 2 && player.dir != 3 && player.canMove){
+            if (player.dir != 2 && player.dir != 3 && player.canMove) {
                 player.dir = 3;
                 player.canMove = false;
                 return true;
